@@ -3,7 +3,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, authenticate, logout
 from .forms import RegistrationForm, LoginForm
 from .models import Post
-from .forms import PostForm
+from .forms import PostForm, CommentForm
 from django.http import Http404
 from django.contrib.auth.decorators import login_required
 
@@ -30,8 +30,23 @@ def create_post(request):
 
 
 def post_detail(request, post_id):
-    post = Post.objects.get(id=post_id)
-    return render(request, 'blog/post_detail.html', {'post': post})
+    post = get_object_or_404(Post, id=post_id)
+    comments = post.comments.all().order_by('-created_at')
+    if request.method == 'POST' and request.user.is_authenticated:
+        form = CommentForm(request.POST)
+        if form.is_valid():
+            comment = form.save(commit=False)
+            comment.post = post
+            comment.author = request.user
+            comment.save()
+            return redirect('post_detail', post_id=post.id)
+    else:
+        form = CommentForm()
+    return render(request, 'blog/post_detail.html', {
+        'post': post,
+        'comments': comments,
+        'form': form,
+    })
 
 
 def edit_post(request, post_id):

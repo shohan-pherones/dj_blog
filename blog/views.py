@@ -1,12 +1,35 @@
 from django.shortcuts import render
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, authenticate, logout
-from django.contrib.auth.forms import AuthenticationForm
 from .forms import RegistrationForm, LoginForm
+from .models import Post
+from .forms import PostForm
 
 
 def index(request):
-    return render(request, 'blog/index.html')
+    posts = Post.objects.all()
+    return render(request, 'blog/index.html', {'posts': posts})
+
+
+def create_post(request):
+    if not request.user.is_authenticated:
+        return redirect('login')
+
+    if request.method == 'POST':
+        form = PostForm(request.POST)
+        if form.is_valid():
+            post = form.save(commit=False)
+            post.author = request.user
+            post.save()
+            return redirect('index')
+    else:
+        form = PostForm()
+    return render(request, 'blog/create_post.html', {'form': form})
+
+
+def post_detail(request, post_id):
+    post = Post.objects.get(id=post_id)
+    return render(request, 'blog/post_detail.html', {'post': post})
 
 
 def register(request):

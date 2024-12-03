@@ -5,6 +5,7 @@ from .forms import RegistrationForm, LoginForm
 from .models import Post
 from .forms import PostForm
 from django.http import Http404
+from django.contrib.auth.decorators import login_required
 
 
 def index(request):
@@ -94,3 +95,10 @@ def user_login(request):
 def user_logout(request):
     logout(request)
     return redirect('index')
+
+
+@login_required
+def user_profile(request):
+    user_posts = Post.objects.filter(
+        author=request.user).order_by('-created_at')
+    return render(request, 'blog/user_profile.html', {'user_posts': user_posts})

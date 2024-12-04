@@ -3,14 +3,24 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>DJ Blog</title>
+        <meta name="author" content="Md. Shohanur Rahman">
+        <meta name="description" content="DJ Blog - A web development blog covering tutorials, tips, and trends in the web development world.">
+        <meta name="keywords" content="web development, tutorials, programming, HTML, CSS, JavaScript, React, Django, development tips">
+        <meta name="robots" content="index, follow">
+        <meta property="og:title" content="DJ Blog - Web Development Tutorials and Resources">
+        <meta property="og:description" content="Learn web development with tutorials, tips, and the latest trends in web development, including HTML, CSS, JavaScript, React, and Django.">
+        <meta property="og:image" content="https://img.icons8.com/?size=100&id=P5x1ndwh2L3p&format=png&color=000000">
+        <meta property="og:url" content="https://djblog-2vnf.onrender.com">
+        <meta property="og:type" content="website">
+        <link rel="icon" href="https://img.icons8.com/?size=100&id=P5x1ndwh2L3p&format=png&color=000000" type="image/png">
         <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+        <title>{% block title %}{% endblock %}</title>
     </head>
     <body class="bg-green-50 font-sans flex flex-col min-h-screen">
         <header class="bg-green-700 text-white shadow-lg">
-            <div class="container mx-auto px-4 py-6 flex justify-between items-center">
-                <a href="{% url 'index' %}" class="text-3xl font-bold tracking-wide">DJ Blog</a>
+            <div class="container mx-auto px-4 py-6 flex flex-col sm:flex-row justify-between items-center gap-4 sm:gap-0">
+                <a href="{% url 'index' %}" class="text-2xl font-bold tracking-wide hover:text-green-300 transition">djBlog</a>
                 <nav>
                     <ul class="flex space-x-6 text-sm font-medium">
                         <li><a href="{% url 'index' %}" class="hover:text-green-300 transition">Home</a></li>
@@ -28,7 +38,7 @@
         </header>
 
         <main class="container mx-auto px-4 py-8 flex-grow">
-            <div class="bg-white border-l-4 border-green-600 rounded-lg shadow-md p-6">
+            <div class="bg-white rounded-lg shadow-md p-3 sm:p-6">
                 {% block content %}
                 {% endblock %}
             </div>
@@ -36,9 +46,9 @@
 
         <footer class="bg-green-800 text-white mt-auto">
             <div class="container mx-auto px-4 py-6 text-center">
-                <p class="text-sm">&copy; 2024 DJ Blog. Built with ❤️ and <a href="https://www.djangoproject.com/" class="text-green-400 hover:underline">Django</a></p>
+                <p class="text-sm">&copy; 2024 djBlog, Built with ❤️ and <a target="_blank" href="https://www.djangoproject.com/" class="text-green-400 hover:underline">Django</a></p>
                 <p class="text-xs mt-2">
-                    Designed with <a href="https://tailwindcss.com/" class="text-green-400 hover:underline">Tailwind CSS</a>
+                    Designed with <a target="_blank" href="https://tailwindcss.com/" class="text-green-400 hover:underline">Tailwind CSS</a>
                 </p>
             </div>
         </footer>

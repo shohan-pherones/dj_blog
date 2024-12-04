@@ -1,103 +1,131 @@
 {% extends 'blog/base.html' %}
 
 {% block content %}
-    <div class="max-w-3xl mx-auto bg-white p-6 rounded-lg shadow-md">
-        <h2 class="text-3xl font-bold">{{ post.title }}</h2>
-        <p class="text-sm text-gray-600">by {{ post.author.username }} on {{ post.created_at }}</p>
-        <div class="mt-4">
-            <p>{{ post.content }}</p>
-        </div>
-
-        <div class="flex space-x-4 mt-6">
-            <button id="like-btn" data-url="{% url 'like_post' post.id %}" class="bg-green-500 text-white px-4 py-2 rounded">
-                Like ({{ post.total_likes }})
-            </button>
-            <button id="dislike-btn" data-url="{% url 'dislike_post' post.id %}" class="bg-red-500 text-white px-4 py-2 rounded">
-                Dislike ({{ post.total_dislikes }})
-            </button>
-        </div>
-
-        {% if post.author == user %}
-            <div class="mt-4 flex space-x-4">
-                <a href="{% url 'edit_post' post.id %}" class="text-blue-600 hover:underline">Edit Post</a>
-                <a href="{% url 'delete_post' post.id %}" class="text-red-600 hover:underline">Delete Post</a>
-            </div>
-        {% endif %}
-
-        <div class="mt-6">
-            <h3 class="text-xl font-semibold">Comments</h3>
-            {% for comment in comments %}
-                <div class="border-t pt-4">
-                    <p class="text-gray-700"><strong>{{ comment.author.username }}</strong> said:</p>
-                    <p>{{ comment.content }}</p>
-                    <p class="text-sm text-gray-500">Posted on {{ comment.created_at }}</p>
-                </div>
-            {% empty %}
-                <p>No comments yet. Be the first to comment!</p>
-            {% endfor %}
-
-            {% if user.is_authenticated %}
-                <div class="mt-6">
-                    <h3 class="text-lg font-semibold">Leave a comment</h3>
-                    <form method="POST">
-                        {% csrf_token %}
-                        {{ form.as_p }}
-                        <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">Submit Comment</button>
-                    </form>
-                </div>
-            {% else %}
-                <p class="text-sm text-gray-600 mt-4">You must be logged in to leave a comment.</p>
-            {% endif %}
-        </div>
+<div class="max-w-3xl mx-auto p-6">
+    <h2 class="text-4xl font-extrabold">{{ post.title }}</h2>
+    
+    <div class="flex justify-between items-center mt-2">
+        <span class="text-black text-base font-semibold">{{ post.author.username }}</span>
+        <span class="text-sm text-gray-500">{{ post.created_at|date:"M d, Y" }} at {{ post.created_at|date:"h:i A" }}</span>
     </div>
 
-    <script>
-        document.querySelector('#like-btn').addEventListener('click', function () {
-            fetch(this.dataset.url, {
-                method: 'POST',
-                headers: { 'X-CSRFToken': '{{ csrf_token }}' }
-            })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Authentication required');
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    this.textContent = `Like (${data.likes_count})`;
-                    if (data.liked) {
-                        this.classList.add('bg-green-700');
-                    } else {
-                        this.classList.remove('bg-green-700');
-                    }
-                })
-                .catch(error => {
-                    alert(error.message);
-                });
-        });
+    <div class="mt-6">
+        <p class="text-lg font-normal">{{ post.content }}</p>
+    </div>
 
-        document.querySelector('#dislike-btn').addEventListener('click', function () {
-            fetch(this.dataset.url, {
-                method: 'POST',
-                headers: { 'X-CSRFToken': '{{ csrf_token }}' }
-            })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Authentication required');
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    this.textContent = `Dislike (${data.dislikes_count})`;
-                    if (data.disliked) {
-                        this.classList.add('bg-red-700');
-                    } else {
-                        this.classList.remove('bg-red-700');
-                    }
-                })
-                .catch(error => {
-                    alert(error.message);
-                });
+    <div class="flex space-x-4 mt-6">
+        <button id="like-btn" data-url="{% url 'like_post' post.id %}" class="flex items-center space-x-2 text-black">
+            <i class="fas fa-arrow-up"></i> 
+            <span id="like-count">{{ post.total_likes }}</span>
+        </button>
+        <button id="dislike-btn" data-url="{% url 'dislike_post' post.id %}" class="flex items-center space-x-2">
+            <i class="fas fa-arrow-down"></i>
+            <span id="dislike-count">{{ post.total_dislikes }}</span>
+        </button>
+    </div>
+
+    {% if post.author == user %}
+        <div class="mt-4 flex space-x-4">
+            <a href="{% url 'edit_post' post.id %}" class="bg-green-100 text-green-500 px-4 py-2 rounded-lg border border-green-500 hover:bg-green-200">
+                Edit Post
+            </a>
+            <a href="{% url 'delete_post' post.id %}" class="text-gray-500 px-4 py-2 rounded-lg border border-gray-500 hover:text-red-600 hover:border-red-600">
+                Delete Post
+            </a>
+        </div>
+    {% endif %}
+
+    <div class="mt-6">
+        <h3 class="text-xl font-semibold">Comments</h3>
+        {% for comment in comments %}
+            <div class="border-t pt-4">
+                <p class="text-gray-700"><strong>{{ comment.author.username }}</strong></p>
+                <p>{{ comment.content }}</p>
+                <p class="text-sm text-gray-500">Posted on {{ comment.created_at }}</p>
+            </div>
+        {% empty %}
+            <p>No comments yet. Be the first to comment!</p>
+        {% endfor %}
+
+        {% if user.is_authenticated %}
+            <div class="mt-6">
+                <h3 class="text-lg font-semibold">Leave a comment</h3>
+                <form method="POST">
+                    {% csrf_token %}
+                    <textarea name="content" id="content" class="w-full p-3 mt-2 border border-gray-300 rounded-lg" placeholder="Write your comment..."></textarea>
+                    
+                    {% if form.content.errors %}
+                        <div class="text-red-500 mt-2">
+                            {% for error in form.content.errors %}
+                                <p>{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                    
+                    <button type="submit" class="bg-green-700 text-white p-3 rounded-lg mt-4 hover:bg-green-800 font-semibold transition duration-300">Submit Comment</button>
+                </form>
+            </div>
+        {% else %}
+            <p class="text-sm text-gray-600 mt-4">You must be logged in to leave a comment.</p>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+    document.querySelector('#like-btn').addEventListener('click', function () {
+        fetch(this.dataset.url, {
+            method: 'POST',
+            headers: { 'X-CSRFToken': '{{ csrf_token }}' }
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Authentication required');
+            }
+            return response.json();
+        })
+        .then(data => {
+            const likeCount = document.querySelector('#like-count');
+            likeCount.textContent = data.likes_count;
+
+            if (data.liked) {
+                this.classList.add('text-green-500');
+                this.classList.remove('text-black');
+            } else {
+                this.classList.remove('text-green-500');
+                this.classList.add('text-black');
+            }
+        })
+        .catch(error => {
+            alert(error.message);
         });
-    </script>
+    });
+
+    document.querySelector('#dislike-btn').addEventListener('click', function () {
+        fetch(this.dataset.url, {
+            method: 'POST',
+            headers: { 'X-CSRFToken': '{{ csrf_token }}' }
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Authentication required');
+            }
+            return response.json();
+        })
+        .then(data => {
+            const dislikeCount = document.querySelector('#dislike-count');
+            dislikeCount.textContent = data.dislikes_count;
+
+            if (data.disliked) {
+                this.classList.add('text-red-500');
+                this.classList.remove('text-black');
+            } else {
+                this.classList.remove('text-red-500');
+                this.classList.add('text-black');
+            }
+        })
+        .catch(error => {
+            alert(error.message);
+        });
+    });
+</script>
 {% endblock %}

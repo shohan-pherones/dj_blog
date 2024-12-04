@@ -1,15 +1,63 @@
 {% extends 'blog/base.html' %}
 
 {% block content %}
-    <div class="max-w-md mx-auto bg-white p-6 rounded-lg shadow-md">
-        <h2 class="text-2xl font-bold mb-4">Register</h2>
-        <form method="POST">
+    <div class="container mx-auto my-4 p-4">
+        <h2 class="text-4xl font-extrabold text-green-800 mb-6 text-center">Register</h2>
+        <form method="POST" class="max-w-md mx-auto">
             {% csrf_token %}
-            {{ form.as_p }}
-            <button type="submit" class="w-full bg-blue-600 text-white p-2 rounded">Register</button>
+            <div class="space-y-6">
+                {% for field in form %}
+                    <div class="space-y-2">
+                        <label for="{{ field.id_for_label }}" class="block text-lg font-semibold text-green-700">{{ field.label }}</label>
+                        <div class="relative">
+                            {% if field.name == 'password' %}
+                                <input 
+                                    type="password" 
+                                    name="{{ field.name }}" 
+                                    id="{{ field.id_for_label }}" 
+                                    value="{{ field.value|default:'' }}" 
+                                    class="w-full p-3 border-2 border-green-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition duration-300" 
+                                    placeholder="Enter your password">
+                            {% elif field.name == 'password_confirm' %}
+                                <input 
+                                    type="password" 
+                                    name="{{ field.name }}" 
+                                    id="{{ field.id_for_label }}" 
+                                    value="{{ field.value|default:'' }}" 
+                                    class="w-full p-3 border-2 border-green-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition duration-300" 
+                                    placeholder="Confirm your password">
+                            {% elif field.name == 'email' %}
+                                <input 
+                                    type="email" 
+                                    name="{{ field.name }}" 
+                                    id="{{ field.id_for_label }}" 
+                                    value="{{ field.value|default:'' }}" 
+                                    class="w-full p-3 border-2 border-green-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition duration-300" 
+                                    placeholder="Enter your email">
+                            {% else %}
+                                <input 
+                                    type="{{ field.type }}" 
+                                    name="{{ field.name }}" 
+                                    id="{{ field.id_for_label }}" 
+                                    value="{{ field.value|default:'' }}" 
+                                    class="w-full p-3 border-2 border-green-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition duration-300" 
+                                    placeholder="Enter your {{ field.label|lower }}">
+                            {% endif %}
+                        </div>
+                        {% if field.errors %}
+                            <div class="text-red-600 text-sm mt-1">
+                                {% for error in field.errors %}
+                                    <p>{{ error }}</p>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+            <button type="submit" class="w-full bg-green-700 text-white font-semibold p-3 rounded-lg mt-4 hover:bg-green-800 transition duration-300">Register</button>
         </form>
-        <p class="mt-4 text-center">
-            Already have an account? <a href="{% url 'login' %}" class="text-blue-600">Login</a>
+        <p class="mt-6 text-center text-gray-600">
+            Already have an account? <a href="{% url 'login' %}" class="text-green-600 hover:text-green-800 font-semibold transition duration-300">Login</a>
         </p>
     </div>
 {% endblock %}

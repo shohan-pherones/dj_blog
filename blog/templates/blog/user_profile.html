@@ -1,22 +1,25 @@
 {% extends 'blog/base.html' %}
 
 {% block content %}
-    <div class="max-w-4xl mx-auto bg-white p-6 rounded-lg shadow-md">
-        <h2 class="text-3xl font-bold mb-6">Your Profile</h2>
-
+    <div class="container mx-auto my-4 p-4">
+        <h2 class="text-4xl font-extrabold text-green-800 mb-8 text-center">Your Posts</h2>
         <div class="mb-6">
-            <h3 class="text-xl font-semibold">Your Posts</h3>
             {% if user_posts %}
-                <ul>
+                <ul class="space-y-6">
                     {% for post in user_posts %}
-                        <li class="border-b py-2">
-                            <a href="{% url 'post_detail' post.id %}" class="text-blue-600 hover:underline">{{ post.title }}</a>
-                            <p class="text-sm text-gray-600">Posted on {{ post.created_at }}</p>
+                        <li class="border-b pb-4">
+                            <a href="{% url 'post_detail' post.id %}" class="text-green-600 hover:text-green-800 font-semibold text-2xl transition duration-300 focus:outline-none focus:ring-2 focus:ring-green-500">
+                                {{ post.title }}
+                            </a>
+                            <div class="flex justify-between items-center mt-2">
+                                <span class="text-black text-base font-semibold">{{ post.author.username }}</span>
+                                <span class="text-sm text-gray-500">{{ post.created_at|date:"M d, Y" }} at {{ post.created_at|date:"h:i A" }}</span>
+                            </div>
                         </li>
                     {% endfor %}
                 </ul>
             {% else %}
-                <p>You have not created any posts yet.</p>
+                <p class="text-center text-gray-600 mt-4">You have not created any posts yet.</p>
             {% endif %}
         </div>
     </div>

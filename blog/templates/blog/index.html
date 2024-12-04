@@ -1,19 +1,24 @@
 {% extends 'blog/base.html' %}
 
 {% block content %}
-    <div class="container mx-auto my-4">
-        <h2 class="text-2xl font-bold mb-4">All Blog Posts</h2>
+    <div class="container mx-auto my-4 p-4">
+        <h2 class="text-4xl font-extrabold text-green-800 mb-8 text-center">All Blog Posts</h2>
         {% if posts %}
-            <ul>
+            <ul class="space-y-6">
                 {% for post in posts %}
-                    <li class="border-b py-2">
-                        <a href="{% url 'post_detail' post.id %}" class="text-blue-600 hover:underline">{{ post.title }}</a>
-                        <p class="text-sm text-gray-600">by {{ post.author.username }} on {{ post.created_at }}</p>
+                    <li class="border-b pb-4">
+                        <a href="{% url 'post_detail' post.id %}" class="text-green-600 hover:text-green-800 font-semibold text-2xl transition duration-300 focus:outline-none focus:ring-2 focus:ring-green-500">
+                            {{ post.title }}
+                        </a>
+                        <div class="flex justify-between items-center mt-2">
+                            <span class="text-black text-base font-semibold">{{ post.author.username }}</span>
+                            <span class="text-sm text-gray-500">{{ post.created_at|date:"M d, Y" }} at {{ post.created_at|date:"h:i A" }}</span>
+                        </div>
                     </li>
                 {% endfor %}
             </ul>
         {% else %}
-            <p>No posts available yet.</p>
+            <p class="text-center text-gray-600 mt-4">No posts available yet.</p>
         {% endif %}
     </div>
 {% endblock %}

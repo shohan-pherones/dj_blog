@@ -8,6 +8,15 @@
             <p>{{ post.content }}</p>
         </div>
 
+        <div class="flex space-x-4 mt-6">
+            <button id="like-btn" data-url="{% url 'like_post' post.id %}" class="bg-green-500 text-white px-4 py-2 rounded">
+                Like ({{ post.total_likes }})
+            </button>
+            <button id="dislike-btn" data-url="{% url 'dislike_post' post.id %}" class="bg-red-500 text-white px-4 py-2 rounded">
+                Dislike ({{ post.total_dislikes }})
+            </button>
+        </div>
+
         {% if post.author == user %}
             <div class="mt-4 flex space-x-4">
                 <a href="{% url 'edit_post' post.id %}" class="text-blue-600 hover:underline">Edit Post</a>
@@ -41,4 +50,54 @@
             {% endif %}
         </div>
     </div>
+
+    <script>
+        document.querySelector('#like-btn').addEventListener('click', function () {
+            fetch(this.dataset.url, {
+                method: 'POST',
+                headers: { 'X-CSRFToken': '{{ csrf_token }}' }
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Authentication required');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    this.textContent = `Like (${data.likes_count})`;
+                    if (data.liked) {
+                        this.classList.add('bg-green-700');
+                    } else {
+                        this.classList.remove('bg-green-700');
+                    }
+                })
+                .catch(error => {
+                    alert(error.message);
+                });
+        });
+
+        document.querySelector('#dislike-btn').addEventListener('click', function () {
+            fetch(this.dataset.url, {
+                method: 'POST',
+                headers: { 'X-CSRFToken': '{{ csrf_token }}' }
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Authentication required');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    this.textContent = `Dislike (${data.dislikes_count})`;
+                    if (data.disliked) {
+                        this.classList.add('bg-red-700');
+                    } else {
+                        this.classList.remove('bg-red-700');
+                    }
+                })
+                .catch(error => {
+                    alert(error.message);
+                });
+        });
+    </script>
 {% endblock %}

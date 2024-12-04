@@ -6,11 +6,55 @@ from .models import Post
 from .forms import PostForm, CommentForm
 from django.http import Http404
 from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse, HttpResponse
 
 
 def index(request):
     posts = Post.objects.all()
     return render(request, 'blog/index.html', {'posts': posts})
+
+
+def register(request):
+    if request.method == 'POST':
+        form = RegistrationForm(request.POST)
+        if form.is_valid():
+            user = form.save(commit=False)
+            user.set_password(form.cleaned_data['password'])
+            user.save()
+            login(request, user)
+            return redirect('index')
+    else:
+        form = RegistrationForm()
+    return render(request, 'blog/register.html', {'form': form})
+
+
+def user_login(request):
+    if request.method == 'POST':
+        form = LoginForm(request.POST)
+        if form.is_valid():
+            username = form.cleaned_data['username']
+            password = form.cleaned_data['password']
+            user = authenticate(request, username=username, password=password)
+            if user is not None:
+                login(request, user)
+                return redirect('index')
+            else:
+                form.add_error(None, "Invalid username or password.")
+    else:
+        form = LoginForm()
+    return render(request, 'blog/login.html', {'form': form})
+
+
+def user_logout(request):
+    logout(request)
+    return redirect('index')
+
+
+@login_required
+def user_profile(request):
+    user_posts = Post.objects.filter(
+        author=request.user).order_by('-created_at')
+    return render(request, 'blog/user_profile.html', {'user_posts': user_posts})
 
 
 def create_post(request):
@@ -66,20 +110,6 @@ def edit_post(request, post_id):
     return render(request, 'blog/edit_post.html', {'form': form, 'post': post})
 
 
-def register(request):
-    if request.method == 'POST':
-        form = RegistrationForm(request.POST)
-        if form.is_valid():
-            user = form.save(commit=False)
-            user.set_password(form.cleaned_data['password'])
-            user.save()
-            login(request, user)
-            return redirect('index')
-    else:
-        form = RegistrationForm()
-    return render(request, 'blog/register.html', {'form': form})
-
-
 def delete_post(request, post_id):
     post = get_object_or_404(Post, id=post_id)
 
@@ -90,30 +120,31 @@ def delete_post(request, post_id):
     return redirect('index')
 
 
-def user_login(request):
+@login_required
+def like_post(request, post_id):
     if request.method == 'POST':
-        form = LoginForm(request.POST)
-        if form.is_valid():
-            username = form.cleaned_data['username']
-            password = form.cleaned_data['password']
-            user = authenticate(request, username=username, password=password)
-            if user is not None:
-                login(request, user)
-                return redirect('index')
-            else:
-                form.add_error(None, "Invalid username or password.")
-    else:
-        form = LoginForm()
-    return render(request, 'blog/login.html', {'form': form})
-
-
-def user_logout(request):
-    logout(request)
-    return redirect('index')
+        post = get_object_or_404(Post, id=post_id)
+        if request.user in post.likes.all():
+            post.likes.remove(request.user)
+            liked = False
+        else:
+            post.likes.add(request.user)
+            post.dislikes.remove(request.user)
+            liked = True
+        return JsonResponse({'liked': liked, 'likes_count': post.total_likes()})
+    return HttpResponse(status=405)
 
 
 @login_required
-def user_profile(request):
-    user_posts = Post.objects.filter(
-        author=request.user).order_by('-created_at')
-    return render(request, 'blog/user_profile.html', {'user_posts': user_posts})
+def dislike_post(request, post_id):
+    if request.method == 'POST':
+        post = get_object_or_404(Post, id=post_id)
+        if request.user in post.dislikes.all():
+            post.dislikes.remove(request.user)
+            disliked = False
+        else:
+            post.dislikes.add(request.user)
+            post.likes.remove(request.user)
+            disliked = True
+        return JsonResponse({'disliked': disliked, 'dislikes_count': post.total_dislikes()})
+    return HttpResponse(status=405)

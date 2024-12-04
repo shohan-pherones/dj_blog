@@ -4,36 +4,36 @@
     <h2 class="text-4xl font-extrabold text-green-800 mb-6 text-center">Create New Post</h2>
     <form method="POST" class="max-w-md mx-auto">
         {% csrf_token %}
-        
+
         <div class="space-y-6">
             {% for field in form %}
                 <div class="space-y-2">
                     <label for="{{ field.id_for_label }}" class="block text-lg font-semibold text-green-700">{{ field.label }}</label>
                     <div class="relative">
                         {% if field.name == 'content' %}
-                            <textarea 
-                                name="{{ field.name }}" 
-                                id="{{ field.id_for_label }}" 
+                            <textarea
+                                name="{{ field.name }}"
+                                id="{{ field.id_for_label }}"
                                 class="w-full p-3 border-2 border-green-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition duration-300 h-32"
                                 {% if field.value %} >{{ field.value }}</textarea>
-                            {% else %}
-                                placeholder="Enter your content here..."></textarea>
-                            {% endif %}
+                                {% else %}
+                                    placeholder="Enter your content here..."></textarea>
+                                {% endif %}
                         {% elif field.name == 'title' %}
-                            <input 
-                                type="{{ field.type }}" 
-                                name="{{ field.name }}" 
-                                id="{{ field.id_for_label }}" 
-                                value="{{ field.value|default:'' }}" 
+                            <input
+                                type="{{ field.type }}"
+                                name="{{ field.name }}"
+                                id="{{ field.id_for_label }}"
+                                value="{{ field.value|default:'' }}"
                                 placeholder="Enter post title"
                                 class="w-full p-3 border-2 border-green-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition duration-300">
                             </input>
                         {% else %}
-                            <input 
-                                type="{{ field.type }}" 
-                                name="{{ field.name }}" 
-                                id="{{ field.id_for_label }}" 
-                                value="{{ field.value|default:'' }}" 
+                            <input
+                                type="{{ field.type }}"
+                                name="{{ field.name }}"
+                                id="{{ field.id_for_label }}"
+                                value="{{ field.value|default:'' }}"
                                 class="w-full p-3 border-2 border-green-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition duration-300">
                             </input>
                         {% endif %}

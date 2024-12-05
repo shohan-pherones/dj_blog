@@ -59,6 +59,7 @@ Your application should now be running locally at `http://127.0.0.1:8000`
 ## Deployments
 
 - **Front-End**: <https://djblog-2vnf.onrender.com>
+- **Docker Image**: <https://hub.docker.com/r/spectrashohan/djblog>
 
 ## Feedback
 
